@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>老照片 WebAR 測試</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- A-Frame -->
+  <script src="https://aframe.io/releases/1.6.0/aframe.min.js"></script>
+
+  <!-- MindAR Image Tracking -->
+  <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
+
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden;
+      font-family: "Microsoft JhengHei", sans-serif;
+    }
+
+    #hint {
+      position: fixed;
+      top: 12px;
+      left: 12px;
+      right: 12px;
+      z-index: 9999;
+      background: rgba(0,0,0,0.7);
+      color: white;
+      padding: 12px;
+      border-radius: 10px;
+      text-align: center;
+      font-size: 16px;
+    }
+
+    #box {
+      display: none;
+      position: fixed;
+      bottom: 18px;
+      left: 12px;
+      right: 12px;
+      z-index: 9999;
+      background: white;
+      padding: 16px;
+      border-radius: 12px;
+      font-size: 17px;
+      line-height: 1.6;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.25);
+    }
+  </style>
+</head>
+
+<body>
+  <div id="hint">請允許相機權限，然後對準老照片。</div>
+
+  <div id="box">
+    <b>辨識成功！</b><br>
+    這裡之後可以放年代、歷史說明、AI 影片連結或問卷。
+  </div>
+
+  <a-scene
+    mindar-image="imageTargetSrc: ./targets.mind;"
+    color-space="sRGB"
+    renderer="colorManagement: true, physicallyCorrectLights"
+    vr-mode-ui="enabled: false"
+    device-orientation-permission-ui="enabled: false">
+
+    <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
+
+    <!-- targetIndex: 0 代表你編譯的第一張照片 -->
+    <a-entity id="target0" mindar-image-target="targetIndex: 0">
+      <a-plane
+        color="#1E90FF"
+        opacity="0.45"
+        position="0 0 0"
+        height="0.6"
+        width="1">
+      </a-plane>
+
+      <a-text
+        value="辨識成功"
+        color="white"
+        align="center"
+        position="0 0.45 0.05"
+        scale="0.7 0.7 0.7">
+      </a-text>
+    </a-entity>
+  </a-scene>
+
+  <script>
+    const hint = document.getElementById("hint");
+    const box = document.getElementById("box");
+    const target0 = document.getElementById("target0");
+
+    target0.addEventListener("targetFound", () => {
+      hint.innerText = "已辨識到老照片。";
+      box.style.display = "block";
+    });
+
+    target0.addEventListener("targetLost", () => {
+      hint.innerText = "照片離開鏡頭，請重新對準。";
+    });
+  </script>
+</body>
+</html>
